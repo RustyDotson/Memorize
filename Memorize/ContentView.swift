@@ -12,9 +12,9 @@ struct ContentView: View {
     
     
     let themes: [[String]] = [["🇺🇸", "🍔", "🦅", "🧨", "🏈"], ["☺️", "🥺", "😂", "🙂‍↔️", "🤨", "😗"], ["🐬", "🐒", "🐶", "🐥", "🦅", "🦆", "🐞"]]
-    let themeColors: [[Color]] = [[.red, .blue], [.white, .yellow], [.teal, .green]]
-    @State var cardList: Array<String> = ["🇺🇸", "🍔", "🦅", "🧨", "🏈", "🐷", "⭐️", "💥"].shuffled()
-    @State var themeColor: [Color] = [.red, .blue]
+    let themeColors: [[Color]] = [[.blue, .red], [.white, .yellow], [.teal, .green]]
+    @State var cardList: Array<String> = ["🇺🇸", "🍔", "🦅", "🧨", "🏈", "🇺🇸", "🍔", "🦅", "🧨", "🏈"].shuffled()
+    @State var themeColor: [Color] = [.blue, .red]
     
     
     var body: some View {
@@ -41,7 +41,12 @@ struct ContentView: View {
                     cardList = (themes[index] + themes[index]).shuffled()
                     themeColor = themeColors[index]
                 }, label: {
-                    Image(systemName: themeButtonLogos[index]).imageScale(.large).font(.largeTitle).padding()
+                    Image(systemName: themeButtonLogos[index])
+                        .renderingMode(.template)
+                        .foregroundColor(themeColors[index][1])
+                        .imageScale(.large)
+                        .font(.largeTitle)
+                        .padding()
                 })
                 Spacer()
             }
