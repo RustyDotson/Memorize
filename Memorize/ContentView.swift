@@ -11,9 +11,10 @@ import SwiftUI
 struct ContentView: View {
     
     
-    let themes: [[String]] = [["🇺🇸", "🍔", "🦅", "🧨", "🏈", "🐷", "⭐️"], ["☺️", "🥺", "😂", "🙂‍↔️", "🤨", "😗", "🥲"], ["🐬", "🐒", "🐶", "🐥", "🦅", "🦆", "🐞"]]
-    @State var cardList: Array<String> = ["🇺🇸", "🍔", "🦅", "🧨", "🏈", "🐷", "⭐️", "💥"]
-    @State var cardCount: Int = 5
+    let themes: [[String]] = [["🇺🇸", "🍔", "🦅", "🧨", "🏈"], ["☺️", "🥺", "😂", "🙂‍↔️", "🤨", "😗"], ["🐬", "🐒", "🐶", "🐥", "🦅", "🦆", "🐞"]]
+    let themeColors: [[Color]] = [[.red, .blue], [.white, .yellow], [.teal, .green]]
+    @State var cardList: Array<String> = ["🇺🇸", "🍔", "🦅", "🧨", "🏈", "🐷", "⭐️", "💥"].shuffled()
+    @State var themeColor: [Color] = [.red, .blue]
     
     
     var body: some View {
@@ -25,48 +26,20 @@ struct ContentView: View {
                 cardStack
             }
             Spacer()
-            cardCountButtons
             
         }
-    }
-    
-    func cardCountAdjuster(by offset: Int, symbol: String) -> some View {
-        Button(action: {
-                cardCount += offset
-        },  label: {
-                Image(systemName: symbol)
-        })
-        .disabled(cardCount + offset == 0 || cardCount + offset == cardList.count+1)
-    }
-    
-    var cardCountButtons: some View {
-            HStack{
-                cardAddButton
-                Spacer()
-                cardRemoveButton
-                
-            }.font(.largeTitle).padding()
-        }
-        
-    var cardAddButton: some View {
-        return cardCountAdjuster(by: 1, symbol: "plus.rectangle.portrait")
-    }
-    
-    var cardRemoveButton: some View {
-        return cardCountAdjuster(by: -1, symbol: "minus.rectangle.portrait")
     }
     
     var themeSelector: some View {
         
         let themeButtonLogos: [String] = ["american.football.fill", "face.smiling.inverse", "bird.fill"]
-        let themeCardCount: [Int] = [4, 5, 6]
         
         return HStack {
             ForEach (0..<3) {index in
                 Spacer()
                 Button (action: {
-                    cardCount = themeCardCount[index]
-                    cardList = themes[index]
+                    cardList = (themes[index] + themes[index]).shuffled()
+                    themeColor = themeColors[index]
                 }, label: {
                     Image(systemName: themeButtonLogos[index]).imageScale(.large).font(.largeTitle).padding()
                 })
@@ -76,9 +49,9 @@ struct ContentView: View {
     }
     
     var cardStack: some View {
-        LazyVGrid(columns: [GridItem(), GridItem()]){
-            ForEach(0..<cardCount, id: \.self) { index in
-                CardView(isFaceUp: false, cardLogos: $cardList, logoIndex: index).aspectRatio(2/3, contentMode: .fit)
+        LazyVGrid(columns: [GridItem(), GridItem(), GridItem(), GridItem()]){
+            ForEach(cardList.indices, id: \.self) { index in
+                CardView(isFaceUp: false, content: $cardList[index], cardColor: $themeColor).aspectRatio(2/3, contentMode: .fit)
             }
         }.padding()
     }
@@ -88,8 +61,8 @@ struct ContentView: View {
 struct CardView: View {
     
     @State var isFaceUp = false
-    @Binding var cardLogos: [String]
-    @State var logoIndex: Int = 0
+    @Binding var content: String
+    @Binding var cardColor: [Color]
     
     var body: some View {
         ZStack {
@@ -97,18 +70,22 @@ struct CardView: View {
             
             Group {
                 cardBase
-                    .foregroundColor(.white)
+                    .foregroundColor(cardColor[0])
                 cardBase
-                    .strokeBorder(lineWidth: 4)
-                Text(cardLogos[logoIndex]).font(.largeTitle)
+                    .strokeBorder(lineWidth: 4).foregroundColor(cardColor[1])
+                Text(content).font(.largeTitle)
             }
             .opacity(isFaceUp ? 1 : 0)
             cardBase.opacity(isFaceUp ? 0 : 1)
         }
-        .foregroundColor(.red)
+        .foregroundColor(cardColor[1])
         .onTapGesture {
             isFaceUp.toggle()
         }
+    }
+    
+    func setLogo(logo: String) {
+        
     }
 }
 
