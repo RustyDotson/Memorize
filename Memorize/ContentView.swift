@@ -33,22 +33,26 @@ struct ContentView: View {
     var themeSelector: some View {
         
         let themeButtonLogos: [String] = ["american.football.fill", "face.smiling.inverse", "bird.fill"]
+        let themeTitles: [String] = ["`MERICA", "Emoji", "Creatures"]
         
         return HStack {
             ForEach (0..<3) {index in
-                Spacer()
-                Button (action: {
-                    cardList = (themes[index] + themes[index]).shuffled()
-                    themeColor = themeColors[index]
-                }, label: {
-                    Image(systemName: themeButtonLogos[index])
-                        .renderingMode(.template)
+                VStack{
+                    Text(themeTitles[index])
+                        .font(.caption)
                         .foregroundColor(themeColors[index][1])
-                        .imageScale(.large)
-                        .font(.largeTitle)
-                        .padding()
-                })
-                Spacer()
+                    Button (action: {
+                        cardList = (themes[index] + themes[index]).shuffled()
+                        themeColor = themeColors[index]
+                    }, label: {
+                        Image(systemName: themeButtonLogos[index])
+                            .renderingMode(.template)
+                            .foregroundColor(themeColors[index][1])
+                            .imageScale(.large)
+                            .font(.largeTitle)
+                            .padding()
+                    })
+                }
             }
         }
     }
@@ -71,15 +75,10 @@ struct CardView: View {
     
     var body: some View {
         ZStack {
+            
             let cardBase = RoundedRectangle(cornerRadius: 15)
             
-            Group {
-                cardBase
-                    .foregroundColor(cardColor[0])
-                cardBase
-                    .strokeBorder(lineWidth: 4).foregroundColor(cardColor[1])
-                Text(content).font(.largeTitle)
-            }
+            cardDesign
             .opacity(isFaceUp ? 1 : 0)
             cardBase.opacity(isFaceUp ? 0 : 1)
         }
@@ -89,8 +88,16 @@ struct CardView: View {
         }
     }
     
-    func setLogo(logo: String) {
+    var cardDesign: some View {
+        let cardBase = RoundedRectangle(cornerRadius: 15)
         
+        return Group {
+            cardBase
+                .foregroundColor(cardColor[0])
+            cardBase
+                .strokeBorder(lineWidth: 4).foregroundColor(cardColor[1])
+            Text(content).font(.largeTitle)
+        }
     }
 }
 
